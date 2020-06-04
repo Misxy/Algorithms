@@ -1,36 +1,47 @@
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
 public class LongestCommonSubsequence {
-    private String text1, text2;
-
-    public LongestCommonSubsequence(final String text1, final String text2) {
-        this.text1 = text1;
-        this.text2 = text2;
-    }
 
     public static void main(String[] args) {
-        String text1 = "abcde";
-        String text2 = "ace";
-        LongestCommonSubsequence longestCommonSubsequence = new LongestCommonSubsequence(text1, text2);
-        System.out.println("Longest Common Subsequence is: " + longestCommonSubsequence.findLCS());
+        String text1 = "AGGTAB";
+        String text2 = "GXTXAYB";
+        char[] cText1 = text1.toCharArray();
+        char[] cText2 = text2.toCharArray();
+        int m = cText1.length;
+        int n = cText2.length;
+        LongestCommonSubsequence longestCommonSubsequence = new LongestCommonSubsequence();
+        System.out.println("Longest Common Subsequence is: " + longestCommonSubsequence.findLCSRecursive(cText1, cText2, m, n));
+        System.out.println("Longest Common Subsequence is: " + longestCommonSubsequence.findLCSDP(cText1, cText2, m, n));
     }
 
-    private Map<String, Integer> findLCS() {
-        String[] splitText1 = text1.split("");
-        Map<String, Integer> lookUpMap = new HashMap<>();
-        String template = "";
-        int result = 0;
+    private int max(int a, int b) {
+        return (a > b) ? a : b;
+    }
 
-        for(int i=0;i<splitText1.length;i++){
-            if(text2.contains(splitText1[i])){
-                result += 1;
-                template += splitText1[i];
+    private int findLCSRecursive(final char[] x, final char[] y, final int m, int n) {
+        if (m == 0 || n == 0) {
+            return 0;
+        }
+        if (x[m - 1] == y[n - 1]) {
+            return 1 + findLCSRecursive(x, y, m - 1, n - 1);
+        } else {
+            return max(findLCSRecursive(x, y, m - 1, n), findLCSRecursive(x, y, m, n - 1));
+        }
+    }
+
+    private int findLCSDP(final char[] x, final char[] y, final int m, final int n){
+        int l [][] = new int[m+1][n+1];
+
+        for(int i=0;i<m;i++) {
+            for (int j = 0; j < n; j++) {
+                if (i == 0 || j == 0) {
+                    l[i][j] = 0;
+                } else if (x[i - 1] == y[j - 1]) {
+                    l[i][j] = 1 + l[i - 1][j - 1];
+                } else {
+                    l[i][j] = max(l[i - 1][j], l[i][j - 1]);
+                }
             }
         }
-        lookUpMap.put(template, result);
-        return lookUpMap;
+        return l[m][n];
     }
 }
 
